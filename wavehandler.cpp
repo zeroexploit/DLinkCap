@@ -33,7 +33,7 @@ WaveHandler::WaveHandler(std::string path)
 void WaveHandler::makeFileWorking(void)
 {
     // Open Wave File and determine Filesize
-    std:::fstream fileStream(this->pathToSource.c_str(), std::ios_base::binary | std::ios_base::out | std::ios_base::in);
+    std::fstream fileStream(this->pathToSource.c_str(), std::ios_base::binary | std::ios_base::out | std::ios_base::in);
     fileStream.seekg(std::ios_base::ate);
     
     const int BYTES_COUNT = sizeof(uint32_t);

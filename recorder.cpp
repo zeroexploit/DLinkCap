@@ -101,7 +101,7 @@ void Recorder::setDeleteTmps(bool deleteTmps)
  */
 bool Recorder::setVideoStream(std::string url)
 {
-    if(url->compare("-") == 0)
+    if(url.compare("-") == 0)
     {
         this->videoStream = "";
         this->recordVideo = false;
@@ -109,9 +109,9 @@ bool Recorder::setVideoStream(std::string url)
         return true;
     }
 
-    if(url->compare(0, 7, "http://") == 0)
+    if(url.compare(0, 7, "http://") == 0)
     {
-        this->videoStream = *url;
+        this->videoStream = url;
         this->recordVideo = true;
         
         return true;
