@@ -42,11 +42,11 @@ However, the Order of the Options doesn't matter and is up to you.
 
 # Options
 These are the Options you can use to customize the Output of DLinkCap. The Values at the End represent the default Setting:
-- -vi : Input Format of the Video Stream (mjpeg)
+- -vi : Input Format of the Video Stream (-auto detected-)
 - -vc : Video Codec as FFmpeg would take it (mpeg4)
 - -vq : Video Quality as FFMpeg Scale for the selected Video Codec (5)
 - -vf : Input Framerate of the Video Stream (-not set-)
-- -ai : Input Format of the Audio Stream (-not set-)
+- -ai : Input Format of the Audio Stream (-auto detect-)
 - -ac : Audio Codec as FFmpeg would take it (libmp3lame)
 - -aq : Audio Quality as FFMpeg Scale for the selected Audio Codec (5)
 - -t  : Set the recording Duration in hh:mm:ss (-until user interrupt-)
@@ -57,7 +57,7 @@ Example:
 
 dlinkcap http://user:pass@192.168.1.11/video.cgi http://user:pass@192.168.1.11/audio.cgi mp4 /var/record.mp4 -vi mjpeg -vc libx264 -vq 24 -vf 20 -ai s26le -ac libmp3 -aq 2 -t 01:30:00
 
-In this Example, DLinkCap will record for 1 hoour and 30 minutes. The mjpeg Video Input Stream will be encoded with x264 Codec (Quality 24) and contains 20 Frames per Second. The Audio s16le (16 Bit PCM - Little Endian) will be converted to Mp3 with a Quality Setting of 2. The Output File will be an MP4 at the given location. I would highly recommend to avoid the input format specifiers as they might mess up the result if set incorrectly. DLinkCap should be able to detect them in most of the cases.
+In this Example, DLinkCap will record for 1 hour and 30 minutes. The mjpeg Video Input Stream will be encoded with x264 Codec (Quality 24) and contains 20 Frames per Second. The Audio s16le (16 Bit PCM - Little Endian) will be converted to Mp3 with a Quality Setting of 2. The Output File will be an MP4 at the given location. I would highly recommend to avoid the input format specifiers as they might mess up the result if set incorrectly. DLinkCap should be able to detect them in most of the cases.
 
 # Capture Intervalls
 If you want to use DLinkCap to capture in Intervalls in a specifig period of time, your only Chance is to use 
