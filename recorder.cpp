@@ -26,10 +26,72 @@ Recorder::Recorder(void)
     this->outputPath = "";
     this->recordAudio = false;
     this->recordVideo = false;
-    this->videoCodec = "libx264";
+    this->videoCodec = "mpeg4";
     this->videoQuality = 5;
     this->videoStream = "";
     this->outputFormat = "mp4";
+    this->shouldMerge = true;
+    this->deleteTmps = true;
+    this->inputFormatVideo = "mjpeg";
+    this->inputFormatAudio = "pcm";
+    this->frameRate = 12;
+    this->tmpAudioFile = "/tmp/dlinkcap_vid.tmp";
+    this->tmpVideoFile = "tmp/dlinkcap_aud.tmp";
+}
+
+/**
+ * Set the Input Format of the Video and Audio Stream. Usefull to avoid wrong
+ * guiessing from FFmpeg. Has no effect on recording but on mergin.
+ * @param audioFormat Pointer to the Audio Format used
+ * @param videoFormat Pointer to the Video Format used
+ */
+void Recorder::setInputFormat(std::string audioFormat, std::string videoFormat)
+{
+    if(audioFormat.length() > 0)
+        this->inputFormatAudio = audioFormat;
+    
+    if(videoFormat.length() > 0)
+        this->inputFormatVideo = videoFormat;
+}
+
+/**
+ * Set the Framerate of the Input Stream. Most likely the Video Stream won't
+ * run with the correct speed if FFmpeg gueses this by itself.
+ * @param inputFramerate Number of Frames per Second of the Input Video Stream
+ */
+void Recorder::setInputFramerate(std::string inputFramerate)
+{
+    this->frameRate = std::stoi(inputFramerate);
+}
+
+/**
+ * Set if the Audio and Video Recordings should be merged together to a Single
+ * Audio / Video File. 
+ * If set to false the recorded Raw Files will always be keept and not 
+ * deleted even if set to do so previously!
+ * @param shouldMerge True to merge Audio / Video. False to keep two seperate Files
+ */
+void Recorder::setShouldMerge(bool shouldMerge)
+{
+    this->shouldMerge = shouldMerge;
+    
+    if(!shouldMerge)
+        this->deleteTmps = false;
+}
+
+/**
+ * Set if the two seperate recorded Raw Files (Audio and Video) should be 
+ * deleted after mergin them or keept for other purposes.
+ * If set to ture the Files will always be merged together even if set to avoid 
+ * that previously.
+ * @param deleteTmps True to delete the raw Files. False to keep them after mergin.
+ */
+void Recorder::setDeleteTmps(bool deleteTmps)
+{
+    this->deleteTmps = deleteTmps;
+    
+    if(deleteTmps)
+        this->shouldMerge = true;
 }
 
 /**
@@ -37,7 +99,7 @@ Recorder::Recorder(void)
  * @param url Pointer to the URL to use
  * @return True if set succesfully. False if not an HTTP Url.
  */
-bool Recorder::setVideoStream(std::string* url)
+bool Recorder::setVideoStream(std::string url)
 {
     if(url->compare("-") == 0)
     {
@@ -63,9 +125,9 @@ bool Recorder::setVideoStream(std::string* url)
  * @param url Pointer to the URL to use
  * @return True if succesfull. False if not an HTTP Url.
  */
-bool Recorder::setAudioStream(std::string* url)
+bool Recorder::setAudioStream(std::string url)
 {
-    if(url->compare("-") == 0)
+    if(url.compare("-") == 0)
     {
         this->audioStream = "";
         this->recordAudio = false;
@@ -73,9 +135,9 @@ bool Recorder::setAudioStream(std::string* url)
         return true;
     }
 
-    if(url->compare(0, 7, "http://") == 0)
+    if(url.compare(0, 7, "http://") == 0)
     {
-        this->audioStream = *url;
+        this->audioStream = url;
         this->recordAudio = true;
         
         return true;
@@ -88,69 +150,69 @@ bool Recorder::setAudioStream(std::string* url)
  * Set the Video Codec to use for encoding
  * @param codec Pointer to the Codec to use
  */
-void Recorder::setVideoCodec(std::string* codec)
+void Recorder::setVideoCodec(std::string codec)
 {
-    this->videoCodec = *codec;
+    this->videoCodec = codec;
 }
         
 /**
  * Set the Audio Codec to use for encoding
  * @param codec Pointer to the Codec to use
  */
-void Recorder::setAudioCodec(std::string* codec)
+void Recorder::setAudioCodec(std::string codec)
 {
-    this->audioCodec = *codec;
+    this->audioCodec = codec;
 }
         
 /**
  * Set the Path to the File where the Output should be written to
  * @param output Pointer to the Output File Path
  */
-void Recorder::setOutputPath(std::string* output)
+void Recorder::setOutputPath(std::string output)
 {
-    this->outputPath = *output;
+    this->outputPath = output;
 }
 
 /**
  * Set the output File Format. Uses FFMpeg Parameter
  * @param format Pointer to the Output Format as FFmpeg would expect it
  */
-void Recorder::setOutputFormat(std::string* format)
+void Recorder::setOutputFormat(std::string format)
 {
-    this->outputFormat = *format;
+    this->outputFormat = format;
 }
         
 /**
  * Set the Quality to use for Video encoding.
  * @param quality Pointer to the Quality
  */
-void Recorder::setVideoQuality(std::string* quality)
+void Recorder::setVideoQuality(std::string quality)
 {
-    this->videoQuality = std::stoi(*quality);
+    this->videoQuality = std::stoi(quality);
 }
    
 /**
  * Set the Quality to use for Audio encoding.
  * @param quality Pointer to the Quality to use
  */
-void Recorder::setAudioQuality(std::string* quality)
+void Recorder::setAudioQuality(std::string quality)
 {
-    this->audioQuality = std::stoi(*quality);
+    this->audioQuality = std::stoi(quality);
 }
         
 /**
  * Set the Recording Time.
  * @param duration Pointer to the Duration
  */
-void Recorder::setRecordingTime(std::string* duration)
+void Recorder::setRecordingTime(std::string duration)
 {
-    if(duration->compare("-") == 0)
+    if(duration.compare("-") == 0)
     {
         this->recordTime = 0;
         return;
     }
     
-    std::vector<std::string> durationList = split(*duration, ":");
+    std::vector<std::string> durationList = split(duration, ":");
     
     if(durationList.size() >= 1)
         this->recordTime += std::stol(durationList.at(durationList.size() - 1));
@@ -207,7 +269,7 @@ std::vector<std::string> Recorder::split(const std::string &str, const std::stri
 }
 
 /**
- * Replace a Substring inside String.
+ * Replace a Substring inside a String.
  * @param str String to seach in
  * @param oldStr String to search for
  * @param newStr String to replace with
@@ -225,14 +287,22 @@ void Recorder::replace(std::string& str, const std::string& oldStr, const std::s
 
 /**
  * Start recording with the given Parameters.
- * @return True if recording was succesfull. False if somethin failed.
  */
-bool Recorder::record(void)
+void Recorder::record(void)
 {
+    std::cout << "Start recording...\n";
+    
+    if(this->recordAudio == false && this->recordVideo == false)
+    {
+        std::cout << "No Video AND No Audio Stream given! Nothing to do here...\n";
+        return;
+    }
+    
     if(this->recordVideo)
     {
         std::cout << "Recording Video Stream...\n";
         
+        // If Video AND Audio should be recorded -> Run a new Thread for parallel recording
         if(this->recordAudio)
         {
             std::thread videoThread(&Recorder::recordVideoStream, this);
@@ -247,31 +317,42 @@ bool Recorder::record(void)
     if(this->recordAudio)
     {
         std::cout << "Recording Audio Stream...\n";
-        std::string audio = recordAudioStream();
+        recordAudioStream();
         
-        WaveHandler wavHandler(audio);
-        
-        if(wavHandler.isEditRequired())
-        {
-            std::cout << "Editing Wave File to make it work correctly...\n";
-            wavHandler.makeFileWorking();
-        }
+        std::cout << "Editing Wave File to make it work correctly...\n";
+        WaveHandler wavHandler(this->tmpAudioFile);
+        wavHandler.makeFileWorking();
     }
     
     if(this->recordAudio && this->recordVideo)
     {
-        std::cout << "Mergin Audio and Video...\n";
-        mergeAudioVideo();
-        removeTmpFiles();
+        if(this->shouldMerge)
+        {
+            std::cout << "Mergin Audio and Video...\n";
+            mergeAudioVideo();
+            std::cout << "Merged to: " + this->outputPath + "\n";
+            
+            if(this->deleteTmps)
+            {
+                std::cout << "Deleting temporary Files...\n";
+                
+                removeTmpFiles();
+            }
+        }
+        else
+        {
+            std::cout << "Mergin Audio and Video disabled!\nVideo File: " + 
+                    this->tmpVideoFile + "\nAudio File: " + this->tmpAudioFile + "\n";
+        }
     }
     
-    return true;
+    std::cout << "Recording done!\n";
 }
 
 /**
  * Record the Audio Stream using wget
  */
-std::string Recorder::recordAudioStream(void)
+void Recorder::recordAudioStream(void)
 {
     char* buff = new char[4096];
     std::string command = "";
@@ -281,32 +362,30 @@ std::string Recorder::recordAudioStream(void)
     else
         command = "wget -qO- " + this->audioStream;
     
-    std::string tmpFileName = this->outputPath;
-    tmpFileName = tmpFileName.substr(0, tmpFileName.find_last_of("/")) + "/aud_" + tmpFileName.substr(tmpFileName.find_last_of("/") + 1);
+    this->tmpAudioFile = this->outputPath;
+    this->tmpAudioFile = this->tmpAudioFile.substr(0, this->tmpAudioFile.find_last_of("/")) + "/aud_" + this->tmpAudioFile.substr(this->tmpAudioFile.find_last_of("/") + 1);
 
-    FILE* ffmpeg = popen(command.c_str(), "r");
-    FILE* output = fopen(tmpFileName.c_str(), "w");
+    FILE* input = popen(command.c_str(), "r");
+    FILE* output = fopen(this->tmpAudioFile.c_str(), "w");
 	
-    if(ffmpeg == NULL || output == NULL)
+    if(input == NULL || output == NULL)
     {
-        std::cout << "Error with output!\n";
-        return "";
+        std::cout << "Error reading the Audio Input Stream!\n";
+        return;
     }
     
     size_t readed;
 
-    while((readed = fread(buff, sizeof(char), sizeof(buff), ffmpeg)) > 0)
+    while((readed = fread(buff, sizeof(char), sizeof(buff), input)) > 0)
     {
         if(fwrite(buff , sizeof(char), readed, output) < 0)
             break;
     }
 
-    pclose(ffmpeg);
+    pclose(input);
     fclose(output);
     delete buff;
     buff = 0;
-    
-    return tmpFileName;
 }
 
 /**
@@ -322,13 +401,13 @@ void Recorder::recordVideoStream(void)
     else
         command = "wget -qO- " + this->videoStream;
     
-    std::string tmpFileName = this->outputPath;
-    tmpFileName = tmpFileName.substr(0, tmpFileName.find_last_of("/")) + "/vid_" + tmpFileName.substr(tmpFileName.find_last_of("/") + 1);
+    this->tmpVideoFile = this->outputPath;
+    this->tmpVideoFile = this->tmpVideoFile.substr(0, this->tmpVideoFile.find_last_of("/")) + "/vid_" + this->tmpVideoFile.substr(this->tmpVideoFile.find_last_of("/") + 1);
 
-    FILE* ffmpeg = popen(command.c_str(), "r");
-    FILE* output = fopen(tmpFileName.c_str(), "w");
+    FILE* input = popen(command.c_str(), "r");
+    FILE* output = fopen(this->tmpVideoFile.c_str(), "w");
 	
-    if(ffmpeg == NULL || output == NULL)
+    if(input == NULL || output == NULL)
     {
         std::cout << "Error with output!\n";
         return;
@@ -336,41 +415,40 @@ void Recorder::recordVideoStream(void)
     
     size_t readed;
 
-    while((readed = fread(buff, sizeof(char), sizeof(buff), ffmpeg)) > 0)
+    while((readed = fread(buff, sizeof(char), sizeof(buff), input)) > 0)
     {
         if(fwrite(buff , sizeof(char), readed, output) < 0)
             break;
     }
 
-    pclose(ffmpeg);
+    pclose(input);
     fclose(output);
     delete buff;
     buff = 0;
 }
 
+/**
+ * Calls FFmpeg to merge and encode the recorded Streams together into a Single
+ * File.
+ */
 void Recorder::mergeAudioVideo(void)
 {
-    std::string tmpVideoName = this->outputPath;
-    tmpVideoName = tmpVideoName.substr(0, tmpVideoName.find_last_of("/")) + "/vid_" + tmpVideoName.substr(tmpVideoName.find_last_of("/") + 1);
-    
-    std::string tmpFileName = this->outputPath;
-    tmpFileName = tmpFileName.substr(0, tmpFileName.find_last_of("/")) + "/aud_" + tmpFileName.substr(tmpFileName.find_last_of("/") + 1);
-    
-    std::string command = "ffmpeg -y -loglevel quiet -f mjpeg -framerate 12 -i " + tmpVideoName + " -i " + tmpFileName
+    // Wait 10 Seconds to let both Threads finish -> Sync it in the Future to avoid this
+    std::this_thread::sleep_for(std::chrono::seconds(10));
+
+    std::string command = "ffmpeg -y -loglevel quiet -f " + this->inputFormatVideo + " -framerate " + std::to_string(this->frameRate) + 
+            " -i " + this->tmpVideoFile + " -f " + this->inputFormatAudio + " -i " + this->tmpAudioFile
             + " -c:v " + this->videoCodec + " -qscale:v " + std::to_string(this->videoQuality) + " -c:a " + this->audioCodec + " -qscale:a " + 
             std::to_string(this->audioQuality) + " -f " +this->outputFormat + " " + this->outputPath;
     
     system(command.c_str());
 }
 
+/**
+ * Removes the temporary Files containing the captured raw Streams.
+ */
 void Recorder::removeTmpFiles(void)
 {
-    std::string tmpVideoName = this->outputPath;
-    tmpVideoName = tmpVideoName.substr(0, tmpVideoName.find_last_of("/")) + "/vid_" + tmpVideoName.substr(tmpVideoName.find_last_of("/") + 1);
-    
-    std::string tmpFileName = this->outputPath;
-    tmpFileName = tmpFileName.substr(0, tmpFileName.find_last_of("/")) + "/aud_" + tmpFileName.substr(tmpFileName.find_last_of("/") + 1);
-    
-    system(std::string("rm " + tmpVideoName).c_str());
-    system(std::string("rm " + tmpFileName).c_str());
+    system(std::string("rm " + this->tmpVideoFile).c_str());
+    system(std::string("rm " + this->tmpAudioFile).c_str());
 }

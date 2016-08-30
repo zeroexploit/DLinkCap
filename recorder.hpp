@@ -17,7 +17,7 @@
 /* 
  * File:   recorder.hpp
  * Author: Jörn Roddelkopf
- * Version: 1.0 27.09.2016
+ * Version: 1.1 30.09.2016
  */
 
 #ifndef RECORDER_HPP
@@ -27,6 +27,7 @@
 #include <string.h>
 #include <vector>
 #include <thread>
+#include <chrono>
 #include <stdio.h>
 #include <iostream>
 #include <unistd.h>
@@ -45,32 +46,43 @@ class Recorder
         std::string audioCodec;     // Audio Codec to use (FFMpeg Style)
         std::string outputPath;     // Path to the Output File
         std::string outputFormat;   // Output Format
+        std::string inputFormatVideo;    // Input Format for Video Stream
+        std::string inputFormatAudio;    // Input Format for Audio Stream
+        std::string tmpAudioFile;   // Path to the temporary Audio File
+        std::string tmpVideoFile;   // Path to the temporary Video File
+        int frameRate;              // Framerate (Input Stream)
         int videoQuality;           // Video Quality (as FFMpeg Scale)
         int audioQuality;           // Audio Quality (as FFMpeg Scale)
         long recordTime;            // Time to record
         bool recordVideo;           // Record Video Stream?
         bool recordAudio;           // Record Audio Stream?
+        bool shouldMerge;           // Merge Audio / Video or keep single Files?
+        bool deleteTmps;            // Delete or keep the temporary recorded Files after mergeing them. Always False if shouldMerge = false.
         
     private:
         std::vector<std::string> split(const std::string &str, const std::string &delim);
         void replace(std::string& str, const std::string& oldStr, const std::string& newStr);
         void recordVideoStream(void);
-        std::string recordAudioStream(void);
+        void recordAudioStream(void);
         void mergeAudioVideo(void);
         void removeTmpFiles(void);
         
     public:
         Recorder(void);             // Default Constructor
-        bool setVideoStream(std::string* url);
-        bool setAudioStream(std::string* url);
-        void setVideoCodec(std::string* codec);
-        void setAudioCodec(std::string* codec);
-        void setOutputPath(std::string* output);
-        void setOutputFormat(std::string* format);
-        void setVideoQuality(std::string* quality);
-        void setAudioQuality(std::string* quality);
-        void setRecordingTime(std::string* duration);
-        bool record(void);
+        bool setVideoStream(std::string url);
+        bool setAudioStream(std::string url);
+        void setVideoCodec(std::string codec);
+        void setAudioCodec(std::string codec);
+        void setOutputPath(std::string output);
+        void setOutputFormat(std::string format);
+        void setVideoQuality(std::string quality);
+        void setAudioQuality(std::string quality);
+        void setRecordingTime(std::string duration);
+        void setShouldMerge(bool shouldMerge);
+        void setDeleteTmps(bool deleteTmps);
+        void setInputFormat(std::string audioFormat, std::string videoFormat);
+        void setInputFramerate(std::string inputFramerate);
+        void record(void);
 };
 
 #endif /* RECORDER_HPP */

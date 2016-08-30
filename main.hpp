@@ -16,7 +16,7 @@
 /* 
  * File:   main.hpp
  * Author: Jörn Roddelkopf
- * Version: 1.0 27.09.2016
+ * Version: 1.1 30.09.2016
  */
 
 #ifndef MAIN_HPP

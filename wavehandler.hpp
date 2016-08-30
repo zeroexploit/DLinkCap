@@ -16,7 +16,7 @@
 /* 
  * File:   wavehandler.hpp
  * Author: Jörn Roddelkopf
- * Version: 1.0 27.09.2016
+ * Version: 1.1 30.09.2016
  */
 
 #ifndef WAVEHANDLER_HPP
@@ -24,7 +24,6 @@
 
 #include <string>
 #include <fstream>
-#include <iostream>
 
 /**
  * Provides all needed Funcationality to make the recorded Waves work as
@@ -33,12 +32,11 @@
 class WaveHandler
 {
     private:
-        std::string pathToSource;
+        std::string pathToSource;       // Path to the Source Wave File
         
     public:
-        WaveHandler(std::string path);
-        bool isEditRequired(void);
-        void makeFileWorking(void);
+        WaveHandler(std::string path);  // Default Constructor
+        void makeFileWorking(void);     // Edit the Wave Header to correct the length Issue
 };
 
 #endif /* WAVEHANDLER_HPP */

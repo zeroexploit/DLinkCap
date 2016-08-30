@@ -15,91 +15,44 @@
 
 #include "wavehandler.hpp"
 
+/**
+ * Default Constructor creates the WaveHandler Object with the given Path to
+ * the Source Wave File that should be edited.
+ * @param path Path to the Wave File that should be edited
+ */
 WaveHandler::WaveHandler(std::string path)
 {
     this->pathToSource = path;
 }
 
-bool WaveHandler::isEditRequired(void)
-{
-    return true;
-}
-
+/**
+ * Correct the ChunkSize of the Wave File wrongly provided by some DLink 
+ * Cameras to make the Duration work properly.
+ * The File is opened and the wrong Values are replaced with the real ones.
+ */
 void WaveHandler::makeFileWorking(void)
 {
-    std::ifstream fileIn(this->pathToSource.c_str(), std::ios::in|std::ios::binary|std::ios::ate);
-    uint32_t dataSizeRiff = fileIn.tellg() - 8; 
-    uint32_t dataSizeData = fileIn.tellg() - 44; 
+    // Open Wave File and determine Filesize
+    std:::fstream fileStream(this->pathToSource.c_str(), std::ios_base::binary | std::ios_base::out | std::ios_base::in);
+    fileStream.seekg(std::ios_base::ate);
     
-    fileIn.seekg(4);
-    uint32_t tmpRiff = 0;
-    uint32_t tmpData = 0;
-    fileIn.read(reinterpret_cast<char*>(&tmpRiff), sizeof(uint32_t));
-    fileIn.seekg(40);
-    fileIn.read(reinterpret_cast<char*>(&tmpData), sizeof(uint32_t));
+    const int BYTES_COUNT = sizeof(uint32_t);
+    const uint32_t RIFF_OFFSET = 4;
+    const uint32_t DATA_OFFSET = 40;
+    const uint32_t RIFF_LENGTH = 8;
+    const uint32_t DATA_LENGTH = 44;
     
-    std::ofstream fileOut((this->pathToSource + ".edited").c_str(), std::ios::out|std::ios::binary);
-    std::string riff = "RIFF";
-    std::string wave = "WAVE";
-    std::string fmt = "fmt ";
-    uint32_t fmtLength = 16;
+    uint32_t fileSize = fileStream.tellg();
+    uint32_t chunkSize = fileSize - RIFF_LENGTH;
+    uint32_t dataSize = fileSize - DATA_LENGTH;
     
-    fileIn.seekg(0);
-    uint32_t tmpShit = 0;
-    fileIn.read(reinterpret_cast<char*>(&tmpShit), 4);
-    fileIn.read(reinterpret_cast<char*>(&tmpShit), 4);
-    fileIn.read(reinterpret_cast<char*>(&tmpShit), 4);
-    fileIn.read(reinterpret_cast<char*>(&tmpShit), 4);
-    fileIn.read(reinterpret_cast<char*>(&tmpShit), 4);
+    // Seek to the 'ChunkSize' in RIFF
+    fileStream.seekp(RIFF_OFFSET, std::ios_base::beg);
+    fileStream.write(reinterpret_cast<const char *>(&chunkSize), BYTES_COUNT);
     
-    int format = 1;
-    int channels = 1;
-    int rate = 16000;
-    int block = (16 * 1) / 8;
-    int bits = 16;
-    int bytesS = rate * block;
-    fileIn.read(reinterpret_cast<char*>(&format), 2);
-    fileIn.read(reinterpret_cast<char*>(&channels), 2);
-    fileIn.read(reinterpret_cast<char*>(&rate), 4);
-    fileIn.read(reinterpret_cast<char*>(&bytesS), 4);
-    fileIn.read(reinterpret_cast<char*>(&block), 2);
-    fileIn.read(reinterpret_cast<char*>(&bits), 2);
-    fileIn.read(reinterpret_cast<char*>(&tmpShit), 4);
-    fileIn.read(reinterpret_cast<char*>(&tmpShit), 4);
-    std::string data = "data";
-
-    // RIFF
-    fileOut.write(reinterpret_cast<const char *>(riff.c_str()), 4);
-    fileOut.write(reinterpret_cast<const char *>(&dataSizeRiff), 4);
-    fileOut.write(reinterpret_cast<const char *>(wave.c_str()), 4);
+    // Seekt to the 'ChunkSize' in DATA
+    fileStream.seekp(DATA_OFFSET, std::ios_base::beg);
+    fileStream.write(reinterpret_cast<const char *>(&dataSize), BYTES_COUNT);
     
-    // FMT
-    fileOut.write(reinterpret_cast<const char *>(fmt.c_str()), 4);
-    fileOut.write(reinterpret_cast<const char *>(&fmtLength), 4);
-    fileOut.write(reinterpret_cast<const char *>(&format), 2);
-    fileOut.write(reinterpret_cast<const char *>(&channels), 2);
-    fileOut.write(reinterpret_cast<const char *>(&rate), 4);
-    fileOut.write(reinterpret_cast<const char *>(&bytesS), 4);
-    fileOut.write(reinterpret_cast<const char *>(&block), 2);
-    fileOut.write(reinterpret_cast<const char *>(&bits), 2);
-    
-    // Data
-    fileOut.write(reinterpret_cast<const char *>(data.c_str()), 4);
-    fileOut.write(reinterpret_cast<const char *>(&dataSizeData), 4);
-    
-    int tmpBit = 0;
-    
-    fileIn.seekg(44);
-    
-    while(fileIn.tellg() < dataSizeData)
-    {
-        fileIn.read(reinterpret_cast<char*>(&tmpBit), block);
-        fileOut.write(reinterpret_cast<const char *>(&tmpBit), block);
-    }
-    
-    fileIn.close();
-    fileOut.close();
-    
-    system(("rm " + this->pathToSource).c_str());
-    system(("mv " + this->pathToSource + ".edited " + this->pathToSource).c_str());
+    fileStream.close();
 }
