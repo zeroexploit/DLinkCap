@@ -53,6 +53,12 @@ These are the Options you can use to customize the Output of DLinkCap. The Value
 - -nm : Do not merge recorded raw Streams (-off-)
 - -dd : Do not delete the recorded raw Files (-off-)
 
+Example:
+
+dlinkcap http://user:pass@192.168.1.11/video.cgi http://user:pass@192.168.1.11/audio.cgi mp4 /var/record.mp4 -vi mjpeg -vc libx264 -vq 24 -vf 20 -ai s26le -ac libmp3 -aq 2 -t 01:30:00
+
+In this Example, DLinkCap will record for 1 hoour and 30 minutes. The mjpeg Video Input Stream will be encoded with x264 Codec (Quality 24) and contains 20 Frames per Second. The Audio s16le (16 Bit PCM - Little Endian) will be converted to Mp3 with a Quality Setting of 2. The Output File will be an MP4 at the given location. I would highly recommend to avoid the input format specifiers as they might mess up the result if set incorrectly. DLinkCap should be able to detect them in most of the cases.
+
 # Capture Intervalls
 If you want to use DLinkCap to capture in Intervalls in a specifig period of time, your only Chance is to use 
 it together with Crontabs. At least for now.
