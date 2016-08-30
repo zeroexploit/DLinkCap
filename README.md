@@ -29,7 +29,7 @@ DLinkCap requires the following external Programs / Librarys to be installt and 
 # Usage
 DLinkCap is used as following:
 
-dlinkcap <Video URL> <Audio URL> <Output Format> <Output Path> [Options]
+dlinkcap (Video URL) (Audio URL) (Output Format) (Output Path) [Options]
 
 Example:
 dlinkcap http://user:pass@192.168.1.11/video.cgi http://user:pass@192.168.1.11/audio.cgi mp4 /var/record.mp4
@@ -41,7 +41,6 @@ However, the Order of the Options doesn't matter and is up to you.
 
 # Options
 These are the Options you can use to customize the Output of DLinkCap. The Values at the End represent the default Setting:
-
 -vi : Input Format of the Video Stream (mjpeg)
 -vc : Video Codec as FFmpeg would take it (mpeg4)
 -vq : Video Quality as FFMpeg Scale for the selected Video Codec (5)
