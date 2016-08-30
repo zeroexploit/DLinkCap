@@ -37,13 +37,14 @@ Recorder::Recorder(void)
     this->frameRate = 12;
     this->tmpAudioFile = "/tmp/dlinkcap_vid.tmp";
     this->tmpVideoFile = "tmp/dlinkcap_aud.tmp";
+    this->recordTime = 0;
 }
 
 /**
  * Set the Input Format of the Video and Audio Stream. Usefull to avoid wrong
  * guiessing from FFmpeg. Has no effect on recording but on mergin.
- * @param audioFormat Pointer to the Audio Format used
- * @param videoFormat Pointer to the Video Format used
+ * @param audioFormat the Audio Format used
+ * @param videoFormat the Video Format used
  */
 void Recorder::setInputFormat(std::string audioFormat, std::string videoFormat)
 {
@@ -96,7 +97,7 @@ void Recorder::setDeleteTmps(bool deleteTmps)
 
 /**
  * Set the Video URL to record from.
- * @param url Pointer to the URL to use
+ * @param url the URL to use
  * @return True if set succesfully. False if not an HTTP Url.
  */
 bool Recorder::setVideoStream(std::string url)
@@ -122,7 +123,7 @@ bool Recorder::setVideoStream(std::string url)
      
 /**
  * Set the Audio URL to record from.
- * @param url Pointer to the URL to use
+ * @param url the URL to use
  * @return True if succesfull. False if not an HTTP Url.
  */
 bool Recorder::setAudioStream(std::string url)
@@ -148,7 +149,7 @@ bool Recorder::setAudioStream(std::string url)
         
 /**
  * Set the Video Codec to use for encoding
- * @param codec Pointer to the Codec to use
+ * @param codec the Codec to use
  */
 void Recorder::setVideoCodec(std::string codec)
 {
@@ -157,7 +158,7 @@ void Recorder::setVideoCodec(std::string codec)
         
 /**
  * Set the Audio Codec to use for encoding
- * @param codec Pointer to the Codec to use
+ * @param codec the Codec to use
  */
 void Recorder::setAudioCodec(std::string codec)
 {
@@ -166,7 +167,7 @@ void Recorder::setAudioCodec(std::string codec)
         
 /**
  * Set the Path to the File where the Output should be written to
- * @param output Pointer to the Output File Path
+ * @param output the Output File Path
  */
 void Recorder::setOutputPath(std::string output)
 {
@@ -175,7 +176,7 @@ void Recorder::setOutputPath(std::string output)
 
 /**
  * Set the output File Format. Uses FFMpeg Parameter
- * @param format Pointer to the Output Format as FFmpeg would expect it
+ * @param format the Output Format as FFmpeg would expect it
  */
 void Recorder::setOutputFormat(std::string format)
 {
@@ -184,7 +185,7 @@ void Recorder::setOutputFormat(std::string format)
         
 /**
  * Set the Quality to use for Video encoding.
- * @param quality Pointer to the Quality
+ * @param quality the Quality
  */
 void Recorder::setVideoQuality(std::string quality)
 {
@@ -193,7 +194,7 @@ void Recorder::setVideoQuality(std::string quality)
    
 /**
  * Set the Quality to use for Audio encoding.
- * @param quality Pointer to the Quality to use
+ * @param quality the Quality to use
  */
 void Recorder::setAudioQuality(std::string quality)
 {
@@ -202,7 +203,7 @@ void Recorder::setAudioQuality(std::string quality)
         
 /**
  * Set the Recording Time.
- * @param duration Pointer to the Duration
+ * @param duration the Duration
  */
 void Recorder::setRecordingTime(std::string duration)
 {
