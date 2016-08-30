@@ -32,6 +32,7 @@ DLinkCap is used as following:
 dlinkcap (Video URL) (Audio URL) (Output Format) (Output Path) [Options]
 
 Example:
+
 dlinkcap http://user:pass@192.168.1.11/video.cgi http://user:pass@192.168.1.11/audio.cgi mp4 /var/record.mp4
 
 That will auth with the Webcam at 192.168.11 and record the Video/Audio to /var/record.mp4 using all default Settings. As
@@ -41,16 +42,16 @@ However, the Order of the Options doesn't matter and is up to you.
 
 # Options
 These are the Options you can use to customize the Output of DLinkCap. The Values at the End represent the default Setting:
--vi : Input Format of the Video Stream (mjpeg)
--vc : Video Codec as FFmpeg would take it (mpeg4)
--vq : Video Quality as FFMpeg Scale for the selected Video Codec (5)
--vf : Input Framerate of the Video Stream (-not set-)
--ai : Input Format of the Audio Stream (-not set-)
--ac : Audio Codec as FFmpeg would take it (libmp3lame)
--aq : Audio Quality as FFMpeg Scale for the selected Audio Codec (5)
--t  : Set the recording Duration in hh:mm:ss (-until user interrupt-)
--nm : Do not merge recorded raw Streams (-off-)
--dd : Do not delete the recorded raw Files (-off-)
+- -vi : Input Format of the Video Stream (mjpeg)
+- -vc : Video Codec as FFmpeg would take it (mpeg4)
+- -vq : Video Quality as FFMpeg Scale for the selected Video Codec (5)
+- -vf : Input Framerate of the Video Stream (-not set-)
+- -ai : Input Format of the Audio Stream (-not set-)
+- -ac : Audio Codec as FFmpeg would take it (libmp3lame)
+- -aq : Audio Quality as FFMpeg Scale for the selected Audio Codec (5)
+- -t  : Set the recording Duration in hh:mm:ss (-until user interrupt-)
+- -nm : Do not merge recorded raw Streams (-off-)
+- -dd : Do not delete the recorded raw Files (-off-)
 
 # Capture Intervalls
 If you want to use DLinkCap to capture in Intervalls in a specifig period of time, your only Chance is to use 
