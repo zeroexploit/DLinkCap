@@ -13,13 +13,7 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* 
- * File:   main.cpp
- * Author: Jörn Roddelkopf
- * Version: 1.0 27.09.2016
- */
-
-#include "main.hpp"
+#include "include/main.hpp"
 
 /**
  * Main Entry Point
@@ -29,6 +23,9 @@
  */
 int main(int argc, char** argv) 
 {
+    std::cout << "DLink Camera Capture Tool\nAuthor: Joern Roddelkopf\nProvided under GNU GPL v3\nCheck: https://github.com/zeroexploit/DLinkCap for Updates etc.\n\n";
+    std::cout << "Usage:\n" << "dlinkcap <Video Stream | -> <Audio Stream | -> <Output Format> <Output File> [OPTIONS]\n\n";
+    
     if(argc <= 1)
     {
         printHelpScreen();
@@ -101,8 +98,6 @@ int main(int argc, char** argv)
  */
 void printHelpScreen(void)
 {
-    std::cout << "DLink Camera Capture Tool\nAuthor: Joern Roddelkopf\nProvided under GNU GPL v3\n\n";
-    std::cout << "Usage:\n" << "dlinkcap <Video Stream | -> <Audio Stream | -> <Output Format> <Output File> [OPTIONS]\n\n";
     std::cout << "Options:\n"
                     "-vi : Input Format of the Video Stream (mjpeg)\n"
                     "-vc : Video Codec as FFmpeg would take it (mpeg4)\n"

@@ -13,7 +13,7 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "wavehandler.hpp"
+#include "include/wavehandler.hpp"
 
 /**
  * Default Constructor creates the WaveHandler Object with the given Path to
