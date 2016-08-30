@@ -43,9 +43,11 @@
       <compileType>
         <cTool>
           <standard>10</standard>
+          <commandLine>-D_FILE_OFFSET_BITS=64</commandLine>
         </cTool>
         <ccTool>
           <standard>8</standard>
+          <commandLine>-D_FILE_OFFSET_BITS=64</commandLine>
         </ccTool>
         <linkerTool>
           <linkerLibItems>

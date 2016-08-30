@@ -32,9 +32,9 @@ Recorder::Recorder(void)
     this->outputFormat = "mp4";
     this->shouldMerge = true;
     this->deleteTmps = true;
-    this->inputFormatVideo = "mjpeg";
-    this->inputFormatAudio = "pcm";
-    this->frameRate = 12;
+    this->inputFormatVideo = "";
+    this->inputFormatAudio = "";
+    this->frameRate = 0;
     this->tmpAudioFile = "/tmp/dlinkcap_vid.tmp";
     this->tmpVideoFile = "tmp/dlinkcap_aud.tmp";
     this->recordTime = 0;
@@ -68,31 +68,21 @@ void Recorder::setInputFramerate(std::string inputFramerate)
 /**
  * Set if the Audio and Video Recordings should be merged together to a Single
  * Audio / Video File. 
- * If set to false the recorded Raw Files will always be keept and not 
- * deleted even if set to do so previously!
  * @param shouldMerge True to merge Audio / Video. False to keep two seperate Files
  */
 void Recorder::setShouldMerge(bool shouldMerge)
 {
     this->shouldMerge = shouldMerge;
-    
-    if(!shouldMerge)
-        this->deleteTmps = false;
 }
 
 /**
  * Set if the two seperate recorded Raw Files (Audio and Video) should be 
  * deleted after mergin them or keept for other purposes.
- * If set to ture the Files will always be merged together even if set to avoid 
- * that previously.
  * @param deleteTmps True to delete the raw Files. False to keep them after mergin.
  */
 void Recorder::setDeleteTmps(bool deleteTmps)
 {
     this->deleteTmps = deleteTmps;
-    
-    if(deleteTmps)
-        this->shouldMerge = true;
 }
 
 /**
@@ -323,30 +313,62 @@ void Recorder::record(void)
         std::cout << "Editing Wave File to make it work correctly...\n";
         WaveHandler wavHandler(this->tmpAudioFile);
         wavHandler.makeFileWorking();
+        
+        // Wait 10 Seconds to let the other Thread finish -> Sync it in the Future to avoid this
+        std::this_thread::sleep_for(std::chrono::seconds(10));
     }
     
-    if(this->recordAudio && this->recordVideo)
+    if(this->shouldMerge)
     {
-        if(this->shouldMerge)
+        std::cout << "Merge Audio and Video...\n";
+        mergeAudioVideo();
+        std::cout << "Output written to: " + this->outputPath + "\n";
+    }
+    else
+    {
+        std::cout << "Mergin disabled! Encoding single Files...\n";
+        
+        if(this->recordAudio)
         {
-            std::cout << "Mergin Audio and Video...\n";
-            mergeAudioVideo();
-            std::cout << "Merged to: " + this->outputPath + "\n";
+            std::cout << "Encoding Audio...\n";
+
+            bool tmpBool = this->recordVideo;
+            this->recordVideo = false;
+            std::string tmpPath = this->outputPath;
+            this->outputPath = this->outputPath + ".audio";
             
-            if(this->deleteTmps)
-            {
-                std::cout << "Deleting temporary Files...\n";
-                
-                removeTmpFiles();
-            }
+            mergeAudioVideo();
+            std::cout << "Audio File written: " + this->outputPath + "\n";
+            
+            this->recordVideo = tmpBool;
+            this->outputPath = tmpPath;           
         }
-        else
+        
+        if(this->recordVideo)
         {
-            std::cout << "Mergin Audio and Video disabled!\nVideo File: " + 
-                    this->tmpVideoFile + "\nAudio File: " + this->tmpAudioFile + "\n";
+            std::cout << "Encoding Video...\n";
+            
+            bool tmpBool = this->recordAudio;
+            this->recordAudio = false;
+            std::string tmpPath = this->outputPath;
+            this->outputPath = this->outputPath + ".video";;
+            
+            mergeAudioVideo();
+            
+            std::cout << "Video File written: " + this->outputPath + "\n";
+            
+            this->recordAudio = tmpBool;
+            this->outputPath = tmpPath;
         }
     }
     
+    if(this->deleteTmps)
+    {
+        std::cout << "Deleting temporary Files...\n";
+                
+        removeTmpFiles();
+    }
+        
     std::cout << "Recording done!\n";
 }
 
@@ -434,13 +456,40 @@ void Recorder::recordVideoStream(void)
  */
 void Recorder::mergeAudioVideo(void)
 {
-    // Wait 10 Seconds to let both Threads finish -> Sync it in the Future to avoid this
-    std::this_thread::sleep_for(std::chrono::seconds(10));
+    std::string command = "ffmpeg -y -loglevel quiet";
+    
+    if(this->recordVideo)
+    {
+        if(this->inputFormatVideo.length() > 0)
+            command += " -f " + this->inputFormatVideo;
 
-    std::string command = "ffmpeg -y -loglevel quiet -f " + this->inputFormatVideo + " -framerate " + std::to_string(this->frameRate) + 
-            " -i " + this->tmpVideoFile + " -f " + this->inputFormatAudio + " -i " + this->tmpAudioFile
-            + " -c:v " + this->videoCodec + " -qscale:v " + std::to_string(this->videoQuality) + " -c:a " + this->audioCodec + " -qscale:a " + 
-            std::to_string(this->audioQuality) + " -f " +this->outputFormat + " " + this->outputPath;
+        if(this->frameRate > 0)
+            command += " -framerate " + std::to_string(this->frameRate);
+
+        command += " -i " + this->tmpVideoFile;
+    }
+    
+    if(this->inputFormatAudio.length() > 0)
+        command += " -f " + this->inputFormatAudio;
+    
+    if(this->recordAudio)
+        command += " -i " + this->tmpAudioFile;
+    else
+        command += " -an";
+    
+    if(this->recordVideo)
+    {
+        command += " -c:v " + this->videoCodec;
+        
+        if(this->videoCodec.compare("libx264") == 0)
+            command += " -crf " + std::to_string(this->videoQuality);
+        else
+            command += " -qscale:v " + std::to_string(this->videoQuality);
+    }
+    if(this->recordAudio)
+        command += " -c:a " + this->audioCodec + " -qscale:a " + std::to_string(this->audioQuality);
+    
+    command += " -f " + this->outputFormat + " " + this->outputPath;
     
     system(command.c_str());
 }

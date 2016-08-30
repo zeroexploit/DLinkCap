@@ -68,7 +68,7 @@ int main(int argc, char** argv)
         if(i + 1 < argc && argvString.compare("-vi") == 0)
             recorder.setInputFormat("", std::string(argv[i + 1]));
         else if(i + 1 < argc && argvString.compare("-vc") == 0)
-            recorder.setVideoCodec(argvString);
+            recorder.setVideoCodec(std::string(argv[i + 1]));
         else if(i + 1 < argc && argvString.compare("-vq") == 0)
             recorder.setVideoQuality(std::string(argv[i + 1]));
         else if(i + 1 < argc && argvString.compare("-vf") == 0)
@@ -103,7 +103,7 @@ void printHelpScreen(void)
                     "-vc : Video Codec as FFmpeg would take it (mpeg4)\n"
                     "-vq : Video Quality as FFMpeg Scale for the selected Video Codec (5)\n"
                     "-vf : Input Framerate of the Video Stream (12)\n"
-                    "-ai : Input Format of the Audio Stream (pcm)"
+                    "-ai : Input Format of the Audio Stream (s16le)"
                     "-ac : Audio Codec as FFmpeg would take it (libmp3lame)\n"
                     "-aq : Audio Quality as FFMpeg Scale for the selected Audio Codec (5)\n"
                     "-t  : Set the recording Duration in hh:mm:ss (01:30:00)\n"
@@ -121,6 +121,6 @@ void printHelpScreen(void)
                     "The Audio Codec that should be used as you would parse ist to FFMpeg (e.g. libmp3lame) or copy it the original should be keelt instead of reencoding it\n"
                     "Audio Quality :\t\tQuality of the Audio. Use the FFmpeg specifig scale (e.g. 0 - 9) for the selected Audio Codec\nDuration :\t\tHow long to record (e.g. 01:00:00 "
                     "will record for an hour) or not set will record until the Users terminates the Tool\nOutput File :\t\tPath to the Output File that should be written.\n"
-                    "Output Format :\t\t Which Container Format will be used as FFmpeg Format \n\n";
+                    "Output Format :\t\t Which Container Format will be used as FFmpeg Format\n\n";
     std::cout << "Dependencies:\n- FFMpeg\n- pThreads\n- wget\n";
 }
