@@ -412,7 +412,7 @@ void Recorder::recordAudioStream(void)
 }
 
 /**
- * Record the Video Stream using FFMpeg.
+ * Record the Video Stream using wget.
  */
 void Recorder::recordVideoStream(void)
 {
@@ -452,7 +452,7 @@ void Recorder::recordVideoStream(void)
 
 /**
  * Calls FFmpeg to merge and encode the recorded Streams together into a Single
- * File.
+ * File. Or just encode a single File.
  */
 void Recorder::mergeAudioVideo(void)
 {
