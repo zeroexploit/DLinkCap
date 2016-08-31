@@ -38,6 +38,7 @@ Recorder::Recorder(void)
     this->tmpAudioFile = "/tmp/dlinkcap_vid.tmp";
     this->tmpVideoFile = "tmp/dlinkcap_aud.tmp";
     this->recordTime = 0;
+    this->shouldEncode = true;
 }
 
 /**
@@ -73,6 +74,16 @@ void Recorder::setInputFramerate(std::string inputFramerate)
 void Recorder::setShouldMerge(bool shouldMerge)
 {
     this->shouldMerge = shouldMerge;
+}
+
+/**
+ * Set if the Raw Audio and Video Recordings should encoded. Makes sense when 
+ * not merged.
+ * @param shouldEncode True Encodes the Single Files. False keeps them Raw.
+ */
+void Recorder::setShouldEncode(bool shouldEncode)
+{
+    this->shouldEncode = shouldEncode;
 }
 
 /**
@@ -326,9 +337,9 @@ void Recorder::record(void)
     }
     else
     {
-        std::cout << "Mergin disabled! Encoding single Files...\n";
+        std::cout << "Mergin disabled...\n";
         
-        if(this->recordAudio)
+        if(this->recordAudio && this->shouldEncode)
         {
             std::cout << "Encoding Audio...\n";
 
@@ -343,8 +354,12 @@ void Recorder::record(void)
             this->recordVideo = tmpBool;
             this->outputPath = tmpPath;           
         }
+        else
+        {
+            std::cout << "No Encoding is performed...\nRaw-Audio File written: " + this->tmpAudioFile + "\n";
+        }
         
-        if(this->recordVideo)
+        if(this->recordVideo && this->shouldEncode)
         {
             std::cout << "Encoding Video...\n";
             
@@ -359,6 +374,10 @@ void Recorder::record(void)
             
             this->recordAudio = tmpBool;
             this->outputPath = tmpPath;
+        }
+        else
+        {
+            std::cout << "No Encoding is performed...\nRaw-Video File written: " + this->tmpVideoFile + "\n";
         }
     }
     
@@ -432,7 +451,7 @@ void Recorder::recordVideoStream(void)
 	
     if(input == NULL || output == NULL)
     {
-        std::cout << "Error with output!\n";
+        std::cout << "Error reading the Video Input Stream!\n";
         return;
     }
     
@@ -456,43 +475,79 @@ void Recorder::recordVideoStream(void)
  */
 void Recorder::mergeAudioVideo(void)
 {
-    std::string command = "ffmpeg -y -loglevel quiet";
+    Daemonizer daemonizer = Daemonizer();
+    char* ffmpeg = "ffmpeg";
+    std::vector<char*> argvs;
+    
+    argvs.push_back("-y");
+    argvs.push_back("-loglevel");
+    argvs.push_back("quiet");
     
     if(this->recordVideo)
     {
         if(this->inputFormatVideo.length() > 0)
-            command += " -f " + this->inputFormatVideo;
-
+        {
+            argvs.push_back("-f");
+            argvs.push_back(this->inputFormatVideo.c_str());
+        }
+            
         if(this->frameRate > 0)
-            command += " -framerate " + std::to_string(this->frameRate);
+        {
+            argvs.push_back("-framerate");
+            argvs.push_back(std::to_string(this->frameRate).c_str());
+        }
 
-        command += " -i " + this->tmpVideoFile;
+        argvs.push_back("-i");
+        argvs.push_back(this->tmpVideoFile.c_str());
     }
     
-    if(this->inputFormatAudio.length() > 0)
-        command += " -f " + this->inputFormatAudio;
+    if(this->inputFormatAudio.length() > 0 && this->recordAudio)
+    {
+        argvs.push_back("-f");
+        argvs.push_back(this->inputFormatAudio.c_str());
+    }
     
     if(this->recordAudio)
-        command += " -i " + this->tmpAudioFile;
+    {
+        argvs.push_back("-i");
+        argvs.push_back(this->tmpAudioFile.c_str());
+    }
     else
-        command += " -an";
+    {
+        argvs.push_back("-an");
+    }
     
     if(this->recordVideo)
     {
-        command += " -c:v " + this->videoCodec;
+        argvs.push_back("-c:v");
+        argvs.push_back(this->videoCodec.c_str());
         
         // If libx264 is used qscale doesn't work and is replaced with crf
         if(this->videoCodec.compare("libx264") == 0)
-            command += " -crf " + std::to_string(this->videoQuality);
+        {
+            argvs.push_back("-crf");
+            argvs.push_back(std::to_string(this->videoQuality).c_str());
+        }
         else
-            command += " -qscale:v " + std::to_string(this->videoQuality);
+        {
+            argvs.push_back("-qscale:v");
+            argvs.push_back(std::to_string(this->videoQuality).c_str());
+        }
     }
+    
     if(this->recordAudio)
-        command += " -c:a " + this->audioCodec + " -qscale:a " + std::to_string(this->audioQuality);
+    {
+        argvs.push_back("-c:a");
+        argvs.push_back(this->audioCodec.c_str());
+        argvs.push_back("-qscale:a");
+        argvs.push_back(std::to_string(this->audioQuality).c_str());
+    }
     
-    command += " -f " + this->outputFormat + " " + this->outputPath;
+    argvs.push_back("-f");
+    argvs.push_back(this->outputFormat.c_str());
+    argvs.push_back(this->outputPath.c_str());
     
-    system(command.c_str());
+    daemonizer.runExternal(ffmpeg, argvs, true);
 }
 
 /**
