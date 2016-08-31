@@ -16,7 +16,7 @@
 /* 
  * File:   main.hpp
  * Author: Jörn Roddelkopf
- * Version: 1.1 30.09.2016
+ * Version: 1.2 31.08.2016
  */
 
 #ifndef MAIN_HPP
@@ -26,6 +26,7 @@
 #include <iostream>
 #include <string>
 #include "recorder.hpp"
+#include "daemonizer.h"
 
 void printHelpScreen(void);
 

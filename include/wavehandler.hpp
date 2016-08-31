@@ -16,7 +16,7 @@
 /* 
  * File:   wavehandler.hpp
  * Author: Jörn Roddelkopf
- * Version: 1.1 30.09.2016
+ * Version: 1.1 30.08.2016
  */
 
 #ifndef WAVEHANDLER_HPP

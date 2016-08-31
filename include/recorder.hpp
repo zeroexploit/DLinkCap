@@ -17,7 +17,7 @@
 /* 
  * File:   recorder.hpp
  * Author: Jörn Roddelkopf
- * Version: 1.1 30.09.2016
+ * Version: 1.2 31.08.2016
  */
 
 #ifndef RECORDER_HPP

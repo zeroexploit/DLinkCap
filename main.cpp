@@ -32,7 +32,9 @@ int main(int argc, char** argv)
         return 0;
     }
     
+    Daemonizer daemonizer = Daemonizer();
     Recorder recorder = Recorder();
+    bool runAsDaemon = false;
     
     for(int i = 0; i < argc; i++)
     {
@@ -86,7 +88,12 @@ int main(int argc, char** argv)
             recorder.setShouldMerge(false);
         else if(argvString.compare("-dd") == 0)
             recorder.setDeleteTmps(false);
+        else if(argvString.compare("-d") == 0)
+            runAsDaemon = true;
     }
+    
+    if(runAsDaemon)
+        daemonizer.daemonize();
     
     recorder.record();
     
@@ -108,7 +115,8 @@ void printHelpScreen(void)
                     "-aq : Audio Quality as FFMpeg Scale for the selected Audio Codec (5)\n"
                     "-t  : Set the recording Duration in hh:mm:ss (01:30:00)\n"
                     "-nm : Do not merge recorded raw Streams\n"
-                    "-dd : Do not delete the recorded raw Files (may takes a lot of disc space)\n\n";
+                    "-dd : Do not delete the recorded raw Files (may takes a lot of disc space)\n"
+                    "-d  : Run as Daemon in the Background\n\n";
     std::cout << "Purpose:\nCapture Video and Audio from DLink Cameras and merge them into one File with the given Codecs and Quality.\n\n";
     std::cout << "Description:\nThis Tool is designed for DLink (or any other compatible) Cameras that doesn\'t provide a single Stream with Video and Audio, like the DSC-932L. "
                     "It will record the Video and Audio separatly, using the HTTP Protocoll and merge them together at the End of the Recording. As some of the DLink Devices provide "

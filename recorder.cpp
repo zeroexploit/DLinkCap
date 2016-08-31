@@ -481,6 +481,7 @@ void Recorder::mergeAudioVideo(void)
     {
         command += " -c:v " + this->videoCodec;
         
+        // If libx264 is used qscale doesn't work and is replaced with crf
         if(this->videoCodec.compare("libx264") == 0)
             command += " -crf " + std::to_string(this->videoQuality);
         else
@@ -499,6 +500,6 @@ void Recorder::mergeAudioVideo(void)
  */
 void Recorder::removeTmpFiles(void)
 {
-    system(std::string("rm " + this->tmpVideoFile).c_str());
-    system(std::string("rm " + this->tmpAudioFile).c_str());
+    std::remove(this->tmpVideoFile.c_str());
+    std::remove(this->tmpAudioFile.c_str());
 }
