@@ -44,7 +44,7 @@ class Daemonizer
 {
     public:
         bool daemonize(void);                                                           // Daemonize this Application
-        bool runExternal(char* cmd, std::vector<char*> argvs, bool wait);   // Run an external Application
+        bool runExternal(const char* cmd, std::vector<const char*> argvs, bool wait);   // Run an external Application
 };
 
 #endif /* DEAMONIZER_H */

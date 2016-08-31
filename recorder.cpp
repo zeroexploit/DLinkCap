@@ -476,8 +476,8 @@ void Recorder::recordVideoStream(void)
 void Recorder::mergeAudioVideo(void)
 {
     Daemonizer daemonizer = Daemonizer();
-    char* ffmpeg = "ffmpeg";
-    std::vector<char*> argvs;
+    const char* ffmpeg = "ffmpeg";
+    std::vector<const char*> argvs;
     
     argvs.push_back("-y");
     argvs.push_back("-loglevel");

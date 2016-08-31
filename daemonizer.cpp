@@ -53,11 +53,11 @@ bool Daemonizer::daemonize(void)
     return true;
 }
 
-bool Daemonizer::runExternal(char* cmd, std::vector<char*> argvs, bool wait)
+bool Daemonizer::runExternal(const char* cmd, std::vector<const char*> argvs, bool wait)
 {
     argvs.insert(argvs.begin(), cmd);
     char* argv[argvs.size() + 1];
-    std::copy(argvs.begin(), argvs.end(), *argv);
+    std::copy(argvs.begin(), argvs.end(), argv);
     argv[argvs.size()] = NULL;
     
     pid_t pid;
