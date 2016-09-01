@@ -52,6 +52,7 @@ These are the Options you can use to customize the Output of DLinkCap. The Value
 - -t  : Set the recording Duration in hh:mm:ss (-until user interrupt-)
 - -nm : Do not merge recorded raw Streams (-off-)
 - -dd : Do not delete the recorded raw Files (-off-)
+- -d  : Run as Daemon
 
 Example:
 
