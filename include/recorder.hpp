@@ -60,12 +60,13 @@ class Recorder
         bool shouldMerge;           // Merge Audio / Video or keep single Files?
         bool shouldEncode;          // Should the Raw-Files should be encoded?
         bool deleteTmps;            // Delete or keep the temporary recorded Files after mergeing them. Always False if shouldMerge = false.
+        std::thread videoThread;    // Thread for capturing the Video
         Daemonizer daemonizer;      // Daemonizer for calling external Tools
         
     private:
         std::vector<std::string> split(const std::string &str, const std::string &delim);
         void replace(std::string& str, const std::string& oldStr, const std::string& newStr);
-        void recordVideoStream(bool wait);
+        void recordVideoStream(void);
         void recordAudioStream(void);
         void mergeAudioVideo(void);
         void removeTmpFiles(void);

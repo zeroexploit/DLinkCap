@@ -4,7 +4,6 @@
     <logicalFolder name="HeaderFiles"
                    displayName="Header Files"
                    projectFiles="true">
-      <itemPath>daemonizer.h</itemPath>
       <itemPath>include/daemonizer.h</itemPath>
       <itemPath>include/main.hpp</itemPath>
       <itemPath>include/recorder.hpp</itemPath>
@@ -22,6 +21,17 @@
       <itemPath>main.cpp</itemPath>
       <itemPath>recorder.cpp</itemPath>
       <itemPath>wavehandler.cpp</itemPath>
+    </logicalFolder>
+    <logicalFolder name="TestFiles"
+                   displayName="Test Files"
+                   projectFiles="false"
+                   kind="TEST_LOGICAL_FOLDER">
+    </logicalFolder>
+    <logicalFolder name="ExternalFiles"
+                   displayName="Important Files"
+                   projectFiles="false"
+                   kind="IMPORTANT_FILES_FOLDER">
+      <itemPath>Makefile</itemPath>
     </logicalFolder>
     <logicalFolder name="TestFiles"
                    displayName="Test Files"
@@ -62,8 +72,6 @@
       </item>
       <item path="daemonizer.cpp" ex="false" tool="1" flavor2="0">
       </item>
-      <item path="daemonizer.h" ex="false" tool="3" flavor2="0">
-      </item>
       <item path="include/daemonizer.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/main.hpp" ex="false" tool="3" flavor2="0">
@@ -102,8 +110,6 @@
       <item path="LICENSE" ex="false" tool="3" flavor2="0">
       </item>
       <item path="daemonizer.cpp" ex="false" tool="1" flavor2="0">
-      </item>
-      <item path="daemonizer.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/daemonizer.h" ex="false" tool="3" flavor2="0">
       </item>

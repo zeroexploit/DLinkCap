@@ -308,11 +308,12 @@ void Recorder::record(void)
         // If Video AND Audio should be recorded -> Run a new Thread for parallel recording
         if(this->recordAudio)
         {
-            recordVideoStream(false);
+            this->videoThread = std::thread(&Recorder::recordVideoStream, this);
+            this->videoThread.detach();
         }
         else
         {
-            recordVideoStream(true);
+            recordVideoStream();
         }
     }
     
@@ -417,50 +418,17 @@ void Recorder::recordAudioStream(void)
     argvs.push_back(">");
     argvs.push_back(this->tmpAudioFile);
 
-    this->daemonizer.runExternal(command, argvs, true);
+    if(!this->daemonizer.runExternal(command, argvs, true))
+        std::cout << "There was an error recording the Audio Stream!\n";
+    else
+        std::cout << "Audio Record complete!\n";
 }
 
-
 /**
- * Record the Video Stream using wget.
+ * Record the Video Stream using FFmpeg. A Encoding is performed while
+ * captureing.
  */
-/**void Recorder::recordVideoStream(void)
-{
-   char* buff = new char[4096];
-    std::string command = "";
-     
-    if(this->recordTime > 0)
-        command = "timeout " + std::to_string(this->recordTime) + " wget -qO- " + this->videoStream;
-    else
-        command = "wget -qO- " + this->videoStream;
-    
-    this->tmpVideoFile = this->outputPath;
-    this->tmpVideoFile = this->tmpVideoFile.substr(0, this->tmpVideoFile.find_last_of("/")) + "/vid_" + this->tmpVideoFile.substr(this->tmpVideoFile.find_last_of("/") + 1);
-
-    FILE* input = popen(command.c_str(), "r");
-    FILE* output = fopen(this->tmpVideoFile.c_str(), "w");
-	
-    if(input == NULL || output == NULL)
-    {
-        std::cout << "Error reading the Video Input Stream!\n";
-        return;
-    }
-    
-    size_t readed;
-
-    while((readed = fread(buff, sizeof(char), sizeof(buff), input)) > 0)
-    {
-        if(fwrite(buff , sizeof(char), readed, output) < 0)
-            break;
-    }
-
-    pclose(input);
-    fclose(output);
-    delete buff;
-    buff = 0;
-}*/
-
-void Recorder::recordVideoStream(bool wait)
+void Recorder::recordVideoStream(void)
 {
     std::string command = "ffmpeg";
     std::vector<std::string> argvs;
@@ -468,7 +436,6 @@ void Recorder::recordVideoStream(bool wait)
     argvs.push_back("-y");
     argvs.push_back("-loglevel");
     argvs.push_back("quiet");
-    argvs.push_back("-use_wallclock_as_timestamps 1");
     
     if(this->inputFormatVideo.length() > 0)
     {
@@ -483,6 +450,8 @@ void Recorder::recordVideoStream(bool wait)
     }
 
     argvs.push_back("-re");
+    argvs.push_back("-use_wallclock_as_timestamps");
+    argvs.push_back("1");
     argvs.push_back("-i");
     argvs.push_back(this->videoStream);
     argvs.push_back("-an");
@@ -517,8 +486,10 @@ void Recorder::recordVideoStream(bool wait)
     argvs.push_back(this->outputFormat);
     argvs.push_back(this->tmpVideoFile);
 
-    if(!this->daemonizer.runExternal(command, argvs, wait))
-        std::cout << "Failed to initalise Video recording!\n";
+    if(!this->daemonizer.runExternal(command, argvs, true))
+       std::cout << "There was an error recording the Video Stream!\n";
+    else
+        std::cout << "Video Record complete!\n";
 }
 
 /**
