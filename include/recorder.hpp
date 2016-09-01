@@ -17,7 +17,7 @@
 /* 
  * File:   recorder.hpp
  * Author: Jörn Roddelkopf
- * Version: 1.2 31.08.2016
+ * Version: 1.3 01.09.2016
  */
 
 #ifndef RECORDER_HPP
@@ -60,11 +60,12 @@ class Recorder
         bool shouldMerge;           // Merge Audio / Video or keep single Files?
         bool shouldEncode;          // Should the Raw-Files should be encoded?
         bool deleteTmps;            // Delete or keep the temporary recorded Files after mergeing them. Always False if shouldMerge = false.
+        Daemonizer daemonizer;      // Daemonizer for calling external Tools
         
     private:
         std::vector<std::string> split(const std::string &str, const std::string &delim);
         void replace(std::string& str, const std::string& oldStr, const std::string& newStr);
-        void recordVideoStream(void);
+        void recordVideoStream(bool wait);
         void recordAudioStream(void);
         void mergeAudioVideo(void);
         void removeTmpFiles(void);

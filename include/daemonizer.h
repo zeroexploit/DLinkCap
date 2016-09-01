@@ -16,7 +16,7 @@
 /* 
  * File:   deamonizer.hpp
  * Author: Jörn Roddelkopf
- * Version: 1.0 31.08.2016
+ * Version: 1.1 01.09.2016
  */
 
 
@@ -44,7 +44,7 @@ class Daemonizer
 {
     public:
         bool daemonize(void);                                                           // Daemonize this Application
-        bool runExternal(const char* cmd, std::vector<const char*> argvs, bool wait);   // Run an external Application
+        bool runExternal(std::string cmd, std::vector<std::string> argvs, bool wait);   // Run an external Application
 };
 
 #endif /* DEAMONIZER_H */
