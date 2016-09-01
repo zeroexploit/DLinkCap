@@ -116,7 +116,7 @@ void printHelpScreen(void)
                     "-vc : Video Codec as FFmpeg would take it (mpeg4)\n"
                     "-vq : Video Quality as FFMpeg Scale for the selected Video Codec (5)\n"
                     "-vf : Input Framerate of the Video Stream (12)\n"
-                    "-ai : Input Format of the Audio Stream (s16le)"
+                    "-ai : Input Format of the Audio Stream (s16le)\n"
                     "-ac : Audio Codec as FFmpeg would take it (libmp3lame)\n"
                     "-aq : Audio Quality as FFMpeg Scale for the selected Audio Codec (5)\n"
                     "-t  : Set the recording Duration in hh:mm:ss (01:30:00)\n"

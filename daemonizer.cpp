@@ -53,15 +53,33 @@ bool Daemonizer::daemonize(void)
     return true;
 }
 
-bool Daemonizer::runExternal(const char* cmd, std::vector<const char*> argvs, bool wait)
+bool Daemonizer::runExternal(std::string cmd, std::vector<std::string> argvs, bool wait)
 {
+    std::string path = "/bin/sh";
+    std::string sh = "sh";
+    std::string cCommand = "-c";
+    std::string argList = "";
+    
     argvs.insert(argvs.begin(), cmd);
-    char* argv[argvs.size() + 1];
-    std::copy(argvs.begin(), argvs.end(), argv);
-    argv[argvs.size()] = NULL;
+    
+    for(int i = 0; i < argvs.size(); i++)
+    {
+        argList += argvs.at(i);
+        
+        if(i < argvs.size() - 1)
+            argList += " ";
+    }
+ 
+    char *argv[] = {&sh[0], &cCommand[0], &argList[0], NULL};
+ 
+    posix_spawn_file_actions_t action;
+    posix_spawn_file_actions_init(&action);
+    posix_spawn_file_actions_addclose(&action, STDOUT_FILENO);
+    posix_spawn_file_actions_addclose(&action, STDIN_FILENO);
+    posix_spawn_file_actions_addclose(&action, STDERR_FILENO);
     
     pid_t pid;
-    int status = posix_spawn(&pid, cmd, NULL, NULL, argv, environ);
+    int status = posix_spawn(&pid, &path[0], &action, NULL, argv, environ);
 
     if(status == 0) 
     {
