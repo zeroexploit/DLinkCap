@@ -4,6 +4,8 @@
     <logicalFolder name="HeaderFiles"
                    displayName="Header Files"
                    projectFiles="true">
+      <itemPath>daemonizer.h</itemPath>
+      <itemPath>include/daemonizer.h</itemPath>
       <itemPath>include/main.hpp</itemPath>
       <itemPath>include/recorder.hpp</itemPath>
       <itemPath>include/wavehandler.hpp</itemPath>
@@ -16,6 +18,7 @@
     <logicalFolder name="SourceFiles"
                    displayName="Source Files"
                    projectFiles="true">
+      <itemPath>daemonizer.cpp</itemPath>
       <itemPath>main.cpp</itemPath>
       <itemPath>recorder.cpp</itemPath>
       <itemPath>wavehandler.cpp</itemPath>
@@ -57,6 +60,12 @@
       </compileType>
       <item path="LICENSE" ex="false" tool="3" flavor2="0">
       </item>
+      <item path="daemonizer.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="daemonizer.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="include/daemonizer.h" ex="false" tool="3" flavor2="0">
+      </item>
       <item path="include/main.hpp" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/recorder.hpp" ex="false" tool="3" flavor2="0">
@@ -91,6 +100,12 @@
         </asmTool>
       </compileType>
       <item path="LICENSE" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="daemonizer.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="daemonizer.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="include/daemonizer.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/main.hpp" ex="false" tool="3" flavor2="0">
       </item>
