@@ -24,7 +24,7 @@ CLEAN_SUBPROJECTS=${CLEAN_SUBPROJECTS_${SUBPROJECTS}}
 
 
 # Project Name
-PROJECTNAME=dlinkcap
+PROJECTNAME=DLinkCap
 
 # Active Configuration
 DEFAULTCONF=Debug

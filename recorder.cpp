@@ -413,7 +413,7 @@ void Recorder::recordAudioStream(void)
     argvs.push_back(this->audioStream);
     
     this->tmpAudioFile = this->outputPath;
-    this->tmpAudioFile = this->tmpAudioFile.substr(0, this->tmpAudioFile.find_last_of("/")) + "/aud_" + this->tmpAudioFile.substr(this->tmpAudioFile.find_last_of("/") + 1);
+    this->tmpAudioFile = this->tmpAudioFile.substr(0, this->tmpAudioFile.find_last_of("/")) + "/aud_" + this->tmpAudioFile.substr(this->tmpAudioFile.find_last_of("/") + 1, this->tmpAudioFile.find_last_of(".")) + ".raw";
     
     argvs.push_back(">");
     argvs.push_back(this->tmpAudioFile);
@@ -425,8 +425,8 @@ void Recorder::recordAudioStream(void)
 }
 
 /**
- * Record the Video Stream using FFmpeg. A Encoding is performed while
- * captureing.
+ * Record the Video Stream using FFmpeg. No Encoding is performed while
+ * capturing.
  */
 void Recorder::recordVideoStream(void)
 {
@@ -456,25 +456,10 @@ void Recorder::recordVideoStream(void)
     argvs.push_back(this->videoStream);
     argvs.push_back("-an");
     argvs.push_back("-c:v");
-    argvs.push_back(this->videoCodec);
-        
-    if(this->videoCodec.compare("copy") != 0)
-    {
-        // If libx264 is used qscale doesn't work and is replaced with crf
-        if(this->videoCodec.compare("libx264") == 0)
-        {
-            argvs.push_back("-crf");
-            argvs.push_back(std::to_string(this->videoQuality));
-        }
-        else
-        {
-            argvs.push_back("-qscale:v");
-            argvs.push_back(std::to_string(this->videoQuality));
-        }
-    }
+    argvs.push_back("copy");
     
     this->tmpVideoFile = this->outputPath;
-    this->tmpVideoFile = this->tmpVideoFile.substr(0, this->tmpVideoFile.find_last_of("/")) + "/vid_" + this->tmpVideoFile.substr(this->tmpVideoFile.find_last_of("/") + 1);
+    this->tmpVideoFile = this->tmpVideoFile.substr(0, this->tmpVideoFile.find_last_of("/")) + "/vid_" + this->tmpVideoFile.substr(this->tmpVideoFile.find_last_of("/") + 1, this->tmpVideoFile.find_last_of(".")) + ".raw";
     
     if(this->recordTime > 0)
     {
@@ -530,7 +515,22 @@ void Recorder::mergeAudioVideo(void)
     if(this->recordVideo)
     {
         argvs.push_back("-c:v");
-        argvs.push_back("copy");
+        argvs.push_back(this->videoCodec);
+    
+        if(this->videoCodec.compare("copy") != 0)
+        {
+            // If libx264 is used qscale doesn't work and is replaced with crf
+            if(this->videoCodec.compare("libx264") == 0)
+            {
+                argvs.push_back("-crf");
+                argvs.push_back(std::to_string(this->videoQuality));
+            }
+            else
+            {
+                argvs.push_back("-qscale:v");
+                argvs.push_back(std::to_string(this->videoQuality));
+            }
+        }
     }
     
     if(this->recordAudio)
