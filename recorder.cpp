@@ -27,7 +27,7 @@ Recorder::Recorder(void)
     this->recordAudio = false;
     this->recordVideo = false;
     this->videoCodec = "mpeg4";
-    this->videoQuality = 5;
+    this->videoQuality = 0;
     this->videoStream = "";
     this->outputFormat = "mp4";
     this->shouldMerge = true;
@@ -517,7 +517,7 @@ void Recorder::mergeAudioVideo(void)
         argvs.push_back("-c:v");
         argvs.push_back(this->videoCodec);
     
-        if(this->videoCodec.compare("copy") != 0)
+        if(this->videoCodec.compare("copy") != 0 && this->videoQuality != 0)
         {
             // If libx264 is used qscale doesn't work and is replaced with crf
             if(this->videoCodec.compare("libx264") == 0)
