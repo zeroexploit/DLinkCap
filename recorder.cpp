@@ -553,6 +553,10 @@ void Recorder::mergeAudioVideo(void)
  */
 void Recorder::removeTmpFiles(void)
 {
-    std::remove(this->tmpVideoFile.c_str());
-    std::remove(this->tmpAudioFile.c_str());
+    if(FILE* file = fopen(this->outputPath.c_str(), "r")) 
+    {
+        std::remove(this->tmpVideoFile.c_str());
+        std::remove(this->tmpAudioFile.c_str());
+        fclose(file);
+    }
 }
